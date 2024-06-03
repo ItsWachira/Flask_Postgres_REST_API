@@ -1,11 +1,17 @@
 import os 
+#import this package -- it's a ORM for python applications with postgres DBs (still an SQL db) replace this with a similar package for mysql db e.g mysql2  or sqlalchemy or sequalize(something of the sort
+# not sure about this exact package --- look it app.
 import psycopg2
+# dotenv package allows you to load any environment variable e.g the db connection URL, host name, et.c in my case i was using an external postgres db in the cloud, i only needed the URl.
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
 load_dotenv()
 
+
+
 app = Flask(__name__)
+# this is how you establish the db connection. - you can move this code to a db.py file then  export it, and import it in the app.py
 url = os.getenv("DATABASE_URL")
 connection = psycopg2.connect(url)
 
@@ -14,6 +20,8 @@ connection = psycopg2.connect(url)
 @app.get("/")
 def home():
     return "hello world"
+
+# now make sure to create you models using your ORMs methods--dont go the raw sql route like i did, you can however opt for it.
 
 CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT);"
 
@@ -26,6 +34,9 @@ SELECT_ALL_USERS = "SELECT * FROM users;"
 SELECT_USER_BY_ID = "SELECT id, name FROM users WHERE id = %s;"
 UPDATE_USER_BY_ID = "UPDATE users SET name = %s WHERE id = %s;"
 DELETE_USER_BY_ID = "DELETE FROM users WHERE id = %s;"
+
+
+# all the API methods to interact with the database.
 
 @app.route("/api/user", methods=["POST"])
 def create_user():
